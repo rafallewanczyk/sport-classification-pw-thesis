@@ -1,5 +1,4 @@
 import abc
-import pickle
 from contextlib import suppress
 from dataclasses import dataclass
 from functools import partial

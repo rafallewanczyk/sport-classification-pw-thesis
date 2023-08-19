@@ -1,0 +1,22 @@
+\newpage
+\section{Podsumowanie}
+\subsection{Omówienie}
+W pracy przedstawione zastosowania hierarchicznych modeli LSTM w zadaniu rozpoznawania dyscypliny sportu na podstawie materiałów wideo. Przetestowane zostały modele działające na różnych cechach wejściowych: 
+\begin{itemize}
+    \item Sylwetkach reprezentowanych poprzez punkty na stawach i kluczowych fragmentach ciała sportowców
+    \item Cechach RGB pojedynczych osób
+    \item Cechach RGB całych klatek. 
+\end{itemize}
+Cechy RGB wyekstrahowane zostały przy pomocy modelu MobileNetV3. 
+Dokonana została również fuzja kombinacji modeli z klasycznym modelem opartym na cechach RGB całej klatki. Najlepszą skuteczność wynoszącą 80.53\%, osiągnęła fuzja modelu opartego na cechach RGB pojedynczych osób z modelem opartym na całych klatkach.
+\subsection{Napotkane problemy}
+\subsubsection{Wybranie osób do modelu hierarchicznego}
+Jako, że przy zastosowanym podejściu rozpoznawanie dyscypliny sportu staje się klasyfikacją aktywności grupowej, w pracy musiał zostać rozwiązany problem doboru osób na wejście modelu. Naturalnym podejściem byłoby wzięcie wszystkich możliwych osób, jednak takiego modelu nie dałoby się trenować w całości oraz mogłoby to wprowadzić duży nakład pracy, która mogłaby nie dać pozytywnych efektów, na przykład gdyby na wejściu do modelu podana zostałaby cała widownia dużego wydarzenia sportowego. Wartość ta nie może być również dowolnie duża ze względu ograniczeń technicznych. Dla modelu, działającego na cechach RGB pojedynczych osób, dodanie osoby liniowo zwiększa rozmiar zbioru danych treningowych oraz czas treningu. Z tego względu w pracy została wybrana stała, maksymalna dla sprzętu, na którym prowadzone były badania wartość równa 6. 
+\subsubsection{Przetrenowanie modeli}
+Nadmiarowe dopasowanie modelu do danych treningowych może wystąpić przy zbyt długim treningu, dużą rozbieżnością między zbiorem treningowym oraz walidacyjnym, lub przy zbyt obszernym modelu. W pracy problemy te zostały rozwiązane kolejno poprzez zastosowanie funkcji wcześniejszego przerwania treningu, zastosowanie warstw dropout, możliwie najlepsze uogólnienie problemu oraz dobranie odpowiedniego rozmiaru architektury. Eksperymenty również wykazały, że zastąpienie pojedynczych warstw LSTM dwukierunkowymi LSTM znacznie poprawiło jakość treningu.  
+
+\subsection{Dalsze prace}
+\subsubsection{Działanie modelu na żywo}
+Aktualnie wstępne przetwarzanie danych wejściowych dla modelu jest zbyt złożone aby wykonywać je w czasie rzeczywistym. Warto zbadać zachowanie rzadszego i bardziej równomiernego próbkowania, niż zostało zastosowane w tej pracy, co odciążyło by całe przetwarzanie i przyśpieszyło działanie modelu. 
+\subsubsection{Zastosowanie modelu do innych aktywności}
+W pracy model został przetestowany wyłącznie w zadaniu rozpoznawania dyscyplin sportu oraz pokazał, że jest w stanie przynieść w nim poprawę w porównaniu do modeli bazowych. Jako, że podejście w przetwarzaniu danych jest uniwersalne i może zostać wykorzystane do rozpoznawania dowolnych aktywności, warto przetestować, czy poprawa będzie zauważalna również dla innych zbiorów danych składających się z bardziej ogólnych aktywności. 

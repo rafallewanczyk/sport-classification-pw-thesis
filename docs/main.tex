@@ -1,0 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bachelor's & Master's Thesis Template             %%
+%% Copyleft by Artur M. Brodzki & Piotr Woźniak      %%
+%% Faculty of Electronics and Information Technology %%
+%% Warsaw University of Technology, 2019-2020        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[
+    left=2.5cm,         % Sadly, generic margin parameter
+    right=2.5cm,        % doesnt't work, as it is
+    top=2.5cm,          % superseded by more specific
+    bottom=3cm,         % left...bottom parameters.
+    bindingoffset=6mm,  % Optional binding offset.
+    nohyphenation=false % You may turn off hyphenation, if don't like.
+]{eiti/eiti-thesis}
+
+\langpol % Dla języka angielskiego mamy \langeng
+\graphicspath{{img/}}             % Katalog z obrazkami.
+\addbibresource{bibliografia.bib} % Plik .bib z bibliografią
+
+\begin{document}
+
+%--------------------------------------
+% Strona tytułowa
+%--------------------------------------
+\MasterThesis % Dla pracy inżynierskiej mamy \EngineerThesis
+\instytut{Instytut Automatyki i Informatyki Stosowanej}
+\kierunek{Informatyka}
+\specjalnosc{Inteligentne Systemy}
+\title{
+    Rozpoznawanie dyscypliny sportu na podstawie materiałów wideo
+}
+\engtitle{ % Tytuł po angielsku do angielskiego streszczenia
+    Sport discipline classification based on video materials
+}
+\author{inż. Rafał Lewanczyk}
+\album{293140}
+\promotor{dr inż. Artur Wilkowski}
+\date{\the\year}
+\maketitle
+
+%--------------------------------------
+% Streszczenie po polsku
+%--------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\streszczenie
+Rozpoznawanie dyscypliny sportu jest zadaniem klasyfikacji aktywności grupowych. Ma ono zastosowanie przy organizowaniu dużych zbiorów nagrań wideo w celu np. proponowanie treści, lub wyszukiwaniu po słowach kluczowych. 
+
+W tej pracy przetestowane zostały podejścia do klasyfikacji aktywności grupowych poprzez analizę aktywności pojedynczych osób przy pomocy cech RGB lub cech szkieletowych, analizę cech RGB całych klatek nagrania oraz kombinacji tych metod. Opisane zostały szczegółowe architektury modeli oraz wnioski z ich działania. Dokonane zostało również porównanie z modelami bazowymi na badanym zbiorze. 
+
+Efektem pracy jest model osiągający skuteczność wynoszącą 80.56\% na zbiorze danych SVW \cite{svw} oraz cały system przetwarzania wideo ekstrahujący wymagane cechy. 
+\slowakluczowe sport, aktywności grupowe, percepcja maszyn, klasyfikacja
+
+%--------------------------------------
+% Streszczenie po angielsku
+%--------------------------------------
+\newpage
+\abstract 
+Recognizing sports disciplines is a task of classifying group activities. It is applied when organizing large sets of video recordings for purposes such as suggesting content or searching by keywords.
+
+In this study, approaches to classify group activities were tested by analyzing the activities of individual persons using RGB features or skeletal features, analyzing the RGB features of entire frames of the recording, and combinations of these methods. Detailed architectures of the models and conclusions from their operation were described. Created models were compared to selected baseline models.
+
+The result of the work is a model achieving an accuracy of 80.56\% on the SVW data set \cite{svw} and an entire video processing system extracting the required features.
+\keywords sport, group activities, computer vision, classification
+
+%--------------------------------------
+% Oświadczenie o autorstwie
+%--------------------------------------
+\cleardoublepage  % Zaczynamy od nieparzystej strony 
+\pagestyle{plain}
+\makeauthorship
+% TODO: END !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+%--------------------------------------
+% Spis treści
+%--------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\tableofcontents
+
+%--------------------------------------
+% Rozdziały
+%--------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\pagestyle{headings}
+
+\input{tex/1-wstep}         % Wygodnie jest trzymać każdy rozdział w osobnym pliku.
+\input{tex/2-przeglad-literatury}    % Umożliwia to również łatwą migrację do nowej wersji szablonu:
+\input{tex/3-uzyte-metody}  
+\input{tex/4-przeprowadzone-eksperymenty}  
+\input{tex/5-wyniki}  
+\input{tex/6-podsumowaine}  
+% \input{tex/3-code-listings} % wystarczy podmienić swoje pliki main.tex i eiti-thesis.cls
+                            % na nowe wersje, a cały tekst pracy pozostaje nienaruszony.
+                            
+%--------------------------------------------
+% Literatura
+%--------------------------------------------
+\cleardoublepage % Zaczynamy od nieparzystej strony
+\printbibliography
+
+%--------------------------------------------
+% Spisy (opcjonalne)
+%--------------------------------------------
+\newpage
+\pagestyle{plain}
+
+% Wykaz symboli i skrótów.
+% Pamiętaj, żeby posortować symbole alfabetycznie
+% we własnym zakresie. Ponieważ mało kto używa takiego wykazu,
+% uznałem, że robienie automatycznie sortowanej listy
+% na poziomie LaTeXa to za duży overkill.
+% Makro \acronymlist generuje właściwy tytuł sekcji,
+% w zależności od języka.
+% Makro \acronym dodaje skrót/symbol do listy,
+% zapewniając podstawowe formatowanie.
+% //AB
+\vspace{0.8cm}
+\acronymlist
+\acronym{EiTI}{Wydział Elektroniki i Technik Informacyjnych}
+\acronym{PW}{Politechnika Warszawska}
+
+\listoffigurestoc     % Spis rysunków.
+\vspace{1cm}          % vertical space
+\listoftablestoc      % Spis tabel.
+\vspace{1cm}          % vertical space
+\listofappendicestoc  % Spis załączników
+
+% Załączniki
+% \newpage
+% \appendix{Nazwa załącznika 1}
+% \lipsum[1-8]
+
+% \newpage
+% \appendix{Nazwa załącznika 2}
+% \lipsum[1-4]
+
+% Używając powyższych spisów jako szablonu,
+% możesz tu dodać swój własny wykaz bądź listę,
+% np. spis algorytmów.
+
+\end{document} % Dobranoc.

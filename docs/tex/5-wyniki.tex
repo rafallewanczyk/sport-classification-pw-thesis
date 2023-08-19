@@ -1,0 +1,61 @@
+\newpage
+\section{Zestawienie wyników}
+Zbiór \textit{"Sports videos in the wild"} \cite{svw} został szeroko zbadany przy użyciu wielu metod. W tym rozdziale dokonane zostaje porównanie wyniku uzyskanego w przeprowadzonych eksperymentach z wynikami uzyskanymi innymi metodami na tym zbiorze danych. 
+\subsection{Metryki bazowe}
+\subsubsection{Bazowa metryka zbioru SVW}
+Twórcy zbioru SVW \cite{svw} dostarczają razem ze zbiorem kilka metryk bazowych. Najlepszy wynik uzyskują stosując algorytm gęstych trajektorii wykorzystujący histogram zorientowanych gradientów (HOG). Proces rozpoczyna się od gęstego próbkowania punktów na kolejnych klatkach wideo, co oznacza, że punkty są wybierane z dużą gęstością w całym kadrze, a nie tylko na podstawie wybranych punktów charakterystycznych. Dzięki temu, gęste trajektorie mogą przechwycić bardziej precyzyjne informacje o ruchu wideo, zwłaszcza w obszarach o szybkim i skomplikowanym ruchu.
+
+Następnie algorytm oblicza cechy dla każdego próbkowanego punktu, które zawierają informacje o intensywności, kierunku i ewolucji ruchu w sąsiedztwie danego punktu. Informacje te reprezentowane są przez Histogramy zorientowanych Gradientów (HOG). W rezultacie otrzymywany jest zestaw cech, które opisują lokalne wzorce ruchu na różnych obszarach wideo.
+
+Kolejnym etapem jest śledzenie trajektorii, czyli określenie przemieszczenia próbkowanych punktów na kolejnych klatkach. Wykorzystane zostały tu techniki estymacji przepływu optycznego, które pozwalają na śledzenie ruchu pikseli w czasie. 
+
+Ostatnim elementem algorytmu jest uwzględnienie informacji czasowej, czyli ewolucji ruchu wideo. Trajektorie są grupowane w sekwencje, a następnie budowane są trajektorialne deskryptory, które przechwytują zmiany w ruchu na przestrzeni czasu.
+
+Zastosowanie tego algorytmu na zbiorze daje skuteczność wynoszącą \textbf{61.53\%}. 
+
+\subsubsection{Dostrajanie modelu Inception-Resnet-V2}
+Joey Asperger et al. \cite{cnn-joey} wykonuje w swojej pracy wyczerpujące testy wykorzystujące sieci splotowe oraz ich kombinacje z warstwami LSTM. Najlepsze wyniki osiąga poprzez dostrojenie wszystkich warstw modelu Inception-Resnet-V2 \cite{inception-resnet-v2}, głębokiej sieci neuronowej, który łączy koncepcje dwóch popularnych architektur: Inception i ResNet. Wykorzystuje on zalety obu modeli, takie jak wieloskalowe ekstrakcje cech, połączenia residualne i globalne uśrednianie pooling, aby osiągnąć wyjątkową skuteczność w zadaniach przetwarzania obrazów. 
+
+W pracy najlepsze wyniki osiąga na uśrednionych, równomiernie rozłożonych w wideo 10 klatkach, wynoszące \textbf{75.9\%}. Połączenie modelu Inception-Resnet-V2 z warstwą LSTM dało wyniki bardzo zbliżone do wyników uzyskanych w tej pracy, dla modelu opartego wyłącznie na całych klatkach oraz warstwie LSTM \ref{fig:frame-arch} wynoszącą 74.7\%. 
+
+\subsubsection{Rozszerzenie modelu VGG16}
+Santanu Datta \cite{kumar} w swoich eksperymentach rozszerza model VGG16 \cite{vgg16} o dodatkowe warstwy splotowe oraz głębokie. Model VGG16 składa się z 16 warstw, które składają się głównie z konwolucyjnych warstw neuronowych (Convolutional Neural Networks - CNN) i warstw poolingowych, zakończonych pełnopowiązkowymi warstwami ukrytymi i wyjściowymi. Jego główną cechą jest prostota architektury, w której stosuje się niewielkie jądra filtrów (3x3 piksele) w wielu kolejnych warstwach, co pozwala na głębokie i skuteczne przetwarzanie obrazów. 
+
+W eksperymentach próbkowane są 4 klatki nagrania, którch reprezentacje uzyskane są przez infrencje wytrenowanego modelu VGG16. Reprezentacje są konkatenowane do wspólnego wektora, który trafia do warstwy splotowej 3D, dwóch warstw głębokich oraz warstwy wyjściowej.
+
+Wynik, który został uzyskany na zbiorze SVW \cite{svw} wynosi \textbf{74.56\%}. 
+\subsection{Porównanie wyników}
+W tabeli \ref{tab:result-comp} przedstawione zostały zbiorcze wyniki modelów opisanych w tym rozdziale. Zaproponowany w tej pracy model osiągnął najwyższą skuteczność. Można zauważyć, że modele oparte wyłącznie na sieciach splotowych oraz całych klatkach osiągnęły bardzo zbliżoną skuteczność, co jest spodziewanym wynikiem. Dopiero rozszerzenie modelu o dodatkowe cechy daje zauważalną zmianę w okolicach 5 punktów procentowych. 
+
+Najgorszy wynik uzyskała metoda gęstych trajektorii, udowadniając, że metody oparte na ręcznym projektowaniu cech wejściowych do modelu odstają skutecznością od uczenia głębokiego dla tak mocno skomplikowanych problemów. 
+\begin{table}[!h] \centering
+\caption{Porównanie wyników}
+\begin{tabular} {| c | c | c | c | r |} \hline
+    Model & Wynik \\ \hline\hline
+    \begin{tabular}[c]{@{}l@{}}\textbf{Hierarchiczny model RGB z konkatenacją + Model klatkowy}\end{tabular} & \textbf{80.53\%} \\ \hline
+    \begin{tabular}[c]{@{}l@{}}Model klatkowy\end{tabular}&  76.16\% \\ \hline
+    \begin{tabular}[c]{@{}l@{}}Dostrojony model Inception-Resnet-V2\end{tabular}&  75.9\% \\ \hline
+    \begin{tabular}[c]{@{}l@{}}Rozszerzony model VGG16\end{tabular}&  74.56\% \\ \hline
+    \begin{tabular}[c]{@{}l@{}}Gęste trajektoria\end{tabular}&  61.53\% \\ \hline
+\end{tabular}
+\label{tab:result-comp} 
+\end{table}
+\subsection{Problemy zastosowanego podejścia}
+Rozszerzenie cech klatkowych o cechy aktywności pojedynczych osób, pomimo znaczącej poprawy względem bazowych modeli wiąże się z kilkoma znaczącymi wadami. 
+\subsubsection{Wstępne przetworzenie danych}
+Dodanie cech aktywności pojedynczych osób do modelu wymaga dużo większej ilości wstępnego przetworzenia danych. Przede wszystkim wymagana jest inferencja detektora znajdującego osoby na nagraniu oraz przetwarzanie znajdujące kluczowych uczestników. Następnie wymagane jest zakodowanie ich cech przez sieć splotową, łącznie dając dodatkową liczbę inferencji równej liczbie badanych osób na nagraniu.
+
+Konieczność zastosowania tak złożonego przetworzenia danych wyklucza model z zastosowania go do wykonywania predykcji na bieżąco, nadaje się wyłącznie do przetwarzania gotowych nagrań. 
+\subsubsection{Rozmiar modelu}
+Dołączenie hierarchicznej części modelu do modelu opartego wyłącznie na klatkach ma bardzo duży wpływ na liczbę parametrów sieci, rozmiar modelu po zastosowaniu fuzji rośnie ponad 2 krotnie, z czym wiąże się większy czas inferencji modelu oraz czas treningu. Porównanie tych parametrów zostało przedstawione w tabeli \ref{tab:param-comp}. 
+\begin{table}[!h]  \centering
+\caption{Porównanie parametrów modeli}
+\begin{tabular} {| c | c | c | c | r |} \hline
+    Model & Liczba trenowalnych parametrów  & Czas inferencji& Czas treningu\\ \hline\hline
+    Model klatkowy &  435 710	& 6 ms	& 61 s  \\ \hline
+    Model hierarchiczny &  1 017 950	& 50 ms	& 526 s \\ \hline
+\end{tabular}
+\label{tab:param-comp}
+\end{table}
+\subsubsection{Zaszumione nagrania wideo}
+Zarówno w testowanym zbiorze danych, jak i przy realnych zastosowaniach modelu mogą wystąpić nagrania, w których detekcja osób zawiedzie, na przykład ze względu na zbyt małą rozdzielczość nagrania, lub algorytm selekcji osób nie wybierze osoby faktycznie wykonującą aktywność, i skupi się na osobach otaczających. W takich przypadkach zastosowanie hierarchicznej części modelu może nie mieć żadnego skutku (otrzyma na wejściu same 0), lub nawet pogorszy wyniki skupiając się na tłumie. Zatem jednym z warunków aby fuzja modeli dała skuteczną poprawę, jest stosowanie modelu na nagraniach, na których jakość detekcji osób jest wystarczająco wysoka. 
