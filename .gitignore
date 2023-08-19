@@ -1,0 +1,7 @@
+*.pkl
+data/
+*.keras
+.idea/
+__pycache__
+*.pt
+*.bg
