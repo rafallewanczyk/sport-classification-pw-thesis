@@ -32,6 +32,8 @@ class Frame(ABCModel):
                                   input_shape=(cls.TIME_STEPS, cls.FRAME_VISUAL_FEATURES_CHANNELS)),
                              backward_layer=LSTM(cls.LSTM_CHANNELS, return_sequences=False),
                              )(start)
+        # body = LSTM(cls.LSTM_CHANNELS, return_sequences=True)(start)
+        # body = LSTM(cls.LSTM_CHANNELS )(body)
         body = Dropout(0.2)(body)
         body = Dense(cls.DENSE_NEURONS, 'relu')(body)
         return body

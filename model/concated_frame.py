@@ -8,7 +8,6 @@ from preprocessing.dto.sequence_dto import SequenceDto
 
 
 class ConcatedFrame(ABCModel):
-    # 76%
     DENSE_NEURONS = 128
 
     def __init__(self):

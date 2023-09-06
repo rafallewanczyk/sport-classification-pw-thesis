@@ -125,20 +125,29 @@ class AbcDataset(abc.ABC):
 
         progress = tqdm(videos_paths)
 
-        histogram_train, histogram_test = {}, {}
-        x_train, y_train, x_test, y_test = [], [], [], []
-        videos_train, videos_test = [], []
+        histogram_train, histogram_test, histogram_val = {}, {}, {}
+        x_train, y_train, x_test, y_test, x_val, y_val = [], [], [], [], [], []
+        videos_train, videos_test, videos_val = [], [], []
+        mode = ""
         for idx, video_path in enumerate(progress):
             if self.dataset_stats[self.dataset_stats.FileName == video_path.name][f'Train {split_id}?'].values[0]:
                 x = x_train
                 y = y_train
                 videos = videos_train
                 histogram = histogram_train
+                mode = "train"
             else:
                 x = x_test
                 y = y_test
                 videos = videos_test
                 histogram = histogram_test
+                mode = "test"
+                if np.random.rand() < 0.3:
+                    x = x_val
+                    y = y_val
+                    videos = videos_val
+                    histogram = histogram_val
+                    mode = "val"
             with suppress(FileNotFoundError):
                 progress.set_postfix({'current video': video_path, 'loaded videos': loaded_x_y_number})
                 vid = Video(video_path, allow_processing_pipeline=False)
@@ -157,6 +166,7 @@ class AbcDataset(abc.ABC):
 
         y_test_array = np.concatenate(y_test, axis=0).reshape((-1, 1))
         y_train_array = np.concatenate(y_train, axis=0).reshape((-1, 1))
+        y_val_array = np.concatenate(y_val, axis=0).reshape((-1, 1))
 
         x_train_arrays = []
         for channel in tqdm(zip(*x_train)):
@@ -164,10 +174,10 @@ class AbcDataset(abc.ABC):
         x_test_arrays = []
         for channel in tqdm(zip(*x_test)):
             x_test_arrays.append(np.concatenate(channel, axis=0))
+        x_val_arrays = []
+        for channel in tqdm(zip(*x_val)):
+            x_val_arrays.append(np.concatenate(channel, axis=0))
 
-        all_sets = [x_train_arrays, y_train_array, x_test_arrays, y_test_array, videos_train, videos_test,
-                    histogram_train, histogram_test]
-        # with x_y_path.open('wb') as file:
-        #     pickle.dump(all_sets, file)
-        #     print('dataset saved')
+        all_sets = [x_train_arrays, y_train_array, x_test_arrays, y_test_array, x_val_arrays, y_val_array, videos_train,
+                    videos_test, videos_val, histogram_train, histogram_test, histogram_val]
         return all_sets
