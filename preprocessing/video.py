@@ -113,9 +113,9 @@ class Video:
         x, y = [], []
         for feature in features_types:
             if feature in [SequenceDto.SKELETON_NORMALIZED, SequenceDto.SKELETON_ANGLES,
-                           SequenceDto.VISUAL_FEATURES_PCA, SequenceDto.VISUAL_FEATURES]:
+                           SequenceDto.VISUAL_FEATURES_RED, SequenceDto.VISUAL_FEATURES]:
                 x.append(self._single_person_features_to_x(sequences, feature, max_person_number))
-            elif feature in [SequenceDto.FRAME_VIS_FEATURES, SequenceDto.FRAME_VIS_FEATURES_PCA]:
+            elif feature in [SequenceDto.FRAME_VIS_FEATURES, SequenceDto.FRAME_VIS_FEATURES_RED]:
                 x.append(self._global_features_to_x(sequences, feature))
             else:
                 raise Exception(f'{feature} collection is not supported')

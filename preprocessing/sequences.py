@@ -43,9 +43,9 @@ class Sequences:
                 bbox=first_detection.bbox.astype(float),
                 skeleton=first_detection.skeleton,
                 visual_features=first_detection.visual_features,
-                visual_features_pca=first_detection.visual_features_pca,
+                visual_features_red=first_detection.visual_features_red,
                 frame_vis_features=first_detection.frame_vis_features,
-                frame_vis_features_pca=first_detection.frame_vis_features_pca,
+                frame_vis_features_red=first_detection.frame_vis_features_red,
                 score=first_detection.score,
                 person_id=first_detection.person_id,
                 frame_copied_from=first_detection.frame_id,
@@ -72,9 +72,9 @@ class Sequences:
                 max_wh=max_wh,
                 skeleton=last_proper_detection.skeleton,
                 visual_features=last_proper_detection.visual_features,
-                visual_features_pca=last_proper_detection.visual_features_pca,
+                visual_features_red=last_proper_detection.visual_features_red,
                 frame_vis_features=last_proper_detection.frame_vis_features,
-                frame_vis_features_pca=last_proper_detection.frame_vis_features_pca,
+                frame_vis_features_red=last_proper_detection.frame_vis_features_red,
                 score=last_proper_detection.score,
                 person_id=last_proper_detection.person_id,
                 frame_copied_from=last_proper_detection.frame_id,
@@ -130,11 +130,11 @@ class Sequences:
 
             if not all_sequences:
                 return pd.DataFrame(columns=SequenceDto.get_cols())
-            # if all_sequences and len(all_sequences) == 3 * seq_multiplier:
-            #     return pd.concat(all_sequences, axis=0)
-            # if all_sequences and len(all_sequences) > 3 * seq_multiplier:
-            #     return pd.concat(all_sequences[:3 * seq_multiplier], axis=0)
-            if len(all_sequences) > 3:
+            if all_sequences and len(all_sequences) == 3 * seq_multiplier:
                 return pd.concat(all_sequences, axis=0)
+            if all_sequences and len(all_sequences) > 3 * seq_multiplier:
+                return pd.concat(all_sequences[:3 * seq_multiplier], axis=0)
+            # if len(all_sequences) > 3:
+            #     return pd.concat(all_sequences, axis=0)
 
         return pd.concat(all_sequences, axis=0)

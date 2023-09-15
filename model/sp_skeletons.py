@@ -17,7 +17,7 @@ class SpSkeletons(ABCModel):
 
     @staticmethod
     def get_required_features_names():
-        return [SequenceDto.VISUAL_FEATURES_PCA, SequenceDto.SKELETON_NORMALIZED]
+        return [SequenceDto.VISUAL_FEATURES_RED, SequenceDto.SKELETON_NORMALIZED]
 
     @classmethod
     def get_inputs(cls):

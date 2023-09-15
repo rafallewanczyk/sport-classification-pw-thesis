@@ -1,3 +1,4 @@
+from keras.layers import Bidirectional
 from tensorflow.keras.layers import Input, LSTM, Dense, Dropout, Reshape, MaxPooling2D, BatchNormalization, \
     Concatenate
 
@@ -52,9 +53,12 @@ class Skeletons(ABCModel):
                          return_sequences=True,
                          stateful=False)(skeletons)
         skeletons = Dropout(0.2)(skeletons)
-        skeletons = LSTM(cls.JOINED_LSTM_CHANNELS, return_sequences=True, stateful=False)(skeletons)
+        skeletons = Bidirectional(LSTM(cls.JOINED_LSTM_CHANNELS, go_backwards=True),
+                                  backward_layer=LSTM(cls.JOINED_LSTM_CHANNELS, return_sequences=False),
+                                  )(skeletons)
+        # skeletons = LSTM(cls.JOINED_LSTM_CHANNELS, return_sequences=True, stateful=False)(skeletons)
+        # skeletons = LSTM(cls.JOINED_LSTM_CHANNELS, return_sequences=False, stateful=False)(skeletons)
         skeletons = Dropout(0.2)(skeletons)
-        skeletons = LSTM(cls.JOINED_LSTM_CHANNELS, return_sequences=False, stateful=False)(skeletons)
         skeletons = Dense(cls.DENSE_NEURONS)(skeletons)
         return skeletons
 

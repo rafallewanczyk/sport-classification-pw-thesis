@@ -21,8 +21,8 @@ class MobilenetService:
             dropout_rate=0.2,
             include_preprocessing=True,
         )
-        with open('/home/rafa/PycharmProjects/sdm2-ready-code/preprocessing/pca.pkl', 'rb') as file:
-            self.pca = pkl.load(file)
+        with open('/preprocessing/red.pkl', 'rb') as file:
+            self.red = pkl.load(file)
 
     @staticmethod
     def get_roi(vid_as_arr, frame, bbox):
@@ -50,10 +50,10 @@ class MobilenetService:
             rois = np.array(df['visual_features'].to_list())
             preds = self.mobilenet_model.predict(rois, verbose=False)
             preds_list = [val for val in preds]
-            pca_preds = self.pca.transform(preds_list)
-            pca_preds_list = [val for val in pca_preds]
+            red_preds = self.red.transform(preds_list)
+            red_preds_list = [val for val in red_preds]
             df[DetectionDto.VISUAL_FEATURES] = preds_list
-            df[DetectionDto.VISUAL_FEATURES_PCA] = pca_preds_list
+            df[DetectionDto.VISUAL_FEATURES_RED] = red_preds_list
             processed_dfs.append(df)
 
         return pd.concat(processed_dfs, axis=0)
@@ -69,11 +69,11 @@ class MobilenetService:
         preds_red_list = []
         for chunk in resized_splitted:
             preds = self.mobilenet_model.predict(chunk, verbose=False)
-            preds_red = self.pca.transform(preds)
+            preds_red = self.red.transform(preds)
             preds_list += [val for val in preds]
             preds_red_list += [val for val in preds_red]
         preds_df = pd.DataFrame(
-            {'right_frame_id': frames, 'frame_vis_features': preds_list, 'frame_vis_features_pca': preds_red_list})
+            {'right_frame_id': frames, 'frame_vis_features': preds_list, 'frame_vis_features_red': preds_red_list})
         ext_df = df.merge(preds_df, 'inner', left_on='frame_id', right_on='right_frame_id')
         ext_df = ext_df.drop('right_frame_id', axis=1)
         return ext_df

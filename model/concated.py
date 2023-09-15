@@ -24,7 +24,7 @@ class Concated(ABCModel):
 
     @staticmethod
     def get_required_features_names():
-        return [SequenceDto.VISUAL_FEATURES_PCA]
+        return [SequenceDto.VISUAL_FEATURES_RED]
 
     @classmethod
     def get_body(cls, inputs):

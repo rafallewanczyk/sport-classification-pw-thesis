@@ -15,9 +15,9 @@ class SequenceDto:
     skeleton_normalized: np.array = field(init=False)
     skeleton_angles: np.array = field(init=False)
     visual_features: np.array
-    visual_features_pca: np.array
+    visual_features_red: np.array
     frame_vis_features: np.array
-    frame_vis_features_pca: np.array
+    frame_vis_features_red: np.array
     score: float
     person_id: int
     frame_copied_from: int
@@ -31,9 +31,9 @@ class SequenceDto:
     SKELETON_NORMALIZED: str = 'skeleton_normalized'
     SKELETON_ANGLES: str = 'skeleton_angles'
     VISUAL_FEATURES: str = 'visual_features'
-    VISUAL_FEATURES_PCA: str = 'visual_features_pca'
+    VISUAL_FEATURES_RED: str = 'visual_features_red'
     FRAME_VIS_FEATURES: str = 'frame_vis_features'
-    FRAME_VIS_FEATURES_PCA: str = 'frame_vis_features_pca'
+    FRAME_VIS_FEATURES_RED: str = 'frame_vis_features_red'
     SCORE: str = 'score'
     PERSON_ID: str = 'person_id'
     FRAME_COPIED_FROM = 'frame_copied_from'
@@ -147,5 +147,5 @@ class SequenceDto:
     @classmethod
     def get_cols(cls) -> List[str]:
         return [cls.VIDEO, cls.FRAME_ID, cls.BBOX, cls.MAX_WH, cls.SKELETON, cls.SKELETON_NORMALIZED,
-                cls.SKELETON_ANGLES, cls.VISUAL_FEATURES, cls.VISUAL_FEATURES_PCA, cls.FRAME_VIS_FEATURES,
-                cls.FRAME_VIS_FEATURES_PCA, cls.SCORE, cls.PERSON_ID, cls.FRAME_COPIED_FROM, cls.START_FRAME]
+                cls.SKELETON_ANGLES, cls.VISUAL_FEATURES, cls.VISUAL_FEATURES_RED, cls.FRAME_VIS_FEATURES,
+                cls.FRAME_VIS_FEATURES_RED, cls.SCORE, cls.PERSON_ID, cls.FRAME_COPIED_FROM, cls.START_FRAME]

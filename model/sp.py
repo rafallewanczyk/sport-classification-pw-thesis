@@ -20,7 +20,7 @@ class Sp(ABCModel):
 
     @staticmethod
     def get_required_features_names():
-        return [SequenceDto.VISUAL_FEATURES_PCA]
+        return [SequenceDto.VISUAL_FEATURES_RED]
 
     @classmethod
     def get_inputs(cls):
@@ -54,6 +54,8 @@ class Sp(ABCModel):
             LSTM(cls.JOINED_LSTM_CHANNELS, go_backwards=True),
             backward_layer=LSTM(cls.JOINED_LSTM_CHANNELS)
         )(sp_hierarchical)
+        # sp_hierarchical = LSTM(cls.JOINED_LSTM_CHANNELS, return_sequences=True)(sp_hierarchical)
+        # sp_hierarchical = LSTM(cls.JOINED_LSTM_CHANNELS)(sp_hierarchical)
         sp_hierarchical = Dropout(0.2)(sp_hierarchical)
         sp_hierarchical = Dense(cls.DENSE_NEURONS, 'relu')(sp_hierarchical)
         return sp_hierarchical

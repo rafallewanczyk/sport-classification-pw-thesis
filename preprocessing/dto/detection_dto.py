@@ -14,9 +14,9 @@ class DetectionDto:
     person_id: int
     unique_color: np.array
     visual_features: Optional[np.array] = None
-    visual_features_pca: Optional[np.array] = None
+    visual_features_red: Optional[np.array] = None
     frame_vis_features: Optional[np.array] = None
-    frame_vis_features_pca: Optional[np.array] = None
+    frame_vis_features_red: Optional[np.array] = None
 
     VIDEO: str = 'video'
     FRAME_ID: str = 'frame_id'
@@ -26,6 +26,6 @@ class DetectionDto:
     PERSON_ID: str = 'person_id'
     UNIQUE_COLOR: str = 'unique_color'
     VISUAL_FEATURES: str = 'visual_features'
-    VISUAL_FEATURES_PCA: str = 'visual_features_pca'
+    VISUAL_FEATURES_RED: str = 'visual_features_red'
     FRAME_VIS_FEATURES: str = 'frame_vis_features'
-    FRAME_VIS_FEATURES_PCA: str = 'frame_vis_features_pca'
+    FRAME_VIS_FEATURES_RED: str = 'frame_vis_features_red'

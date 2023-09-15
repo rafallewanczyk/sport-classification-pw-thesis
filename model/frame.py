@@ -19,7 +19,7 @@ class Frame(ABCModel):
 
     @staticmethod
     def get_required_features_names():
-        return [SequenceDto.FRAME_VIS_FEATURES_PCA]
+        return [SequenceDto.FRAME_VIS_FEATURES_RED]
 
     @classmethod
     def get_inputs(cls):
