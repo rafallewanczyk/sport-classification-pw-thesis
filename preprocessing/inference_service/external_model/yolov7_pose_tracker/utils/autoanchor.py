@@ -21,7 +21,7 @@ def check_anchor_order(m):
 
 
 def check_anchors(dataset, model, thr=4.0, imgsz=640):
-    # Check anchor fit to data, recompute if necessary
+    # Check anchor fit to inference, recompute if necessary
     prefix = colorstr('autoanchor: ')
     print(f'\n{prefix}Analyzing anchors... ', end='')
     m = model.module.model[-1] if hasattr(model, 'module') else model.model[-1]  # Detect()
@@ -59,7 +59,7 @@ def check_anchors(dataset, model, thr=4.0, imgsz=640):
     print('')  # newline
 
 
-def kmean_anchors(path='./data/coco.yaml', n=9, img_size=640, thr=4.0, gen=1000, verbose=True):
+def kmean_anchors(path='./inference/coco.yaml', n=9, img_size=640, thr=4.0, gen=1000, verbose=True):
     """ Creates kmeans-evolved anchors from training dataset
 
         Arguments:

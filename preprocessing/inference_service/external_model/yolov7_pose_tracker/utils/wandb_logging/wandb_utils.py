@@ -25,7 +25,7 @@ def remove_prefix(from_string, prefix=WANDB_ARTIFACT_PREFIX):
 
 
 def check_wandb_config_file(data_config_file):
-    wandb_config = '_wandb.'.join(data_config_file.rsplit('.', 1))  # updated data.yaml path
+    wandb_config = '_wandb.'.join(data_config_file.rsplit('.', 1))  # updated inference.yaml path
     if Path(wandb_config).is_file():
         return wandb_config
     return data_config_file
@@ -55,20 +55,20 @@ def check_wandb_resume(opt):
 
 def process_wandb_config_ddp_mode(opt):
     with open(opt.data) as f:
-        data_dict = yaml.load(f, Loader=yaml.SafeLoader)  # data dict
+        data_dict = yaml.load(f, Loader=yaml.SafeLoader)  # inference dict
     train_dir, val_dir = None, None
     if isinstance(data_dict['train'], str) and data_dict['train'].startswith(WANDB_ARTIFACT_PREFIX):
         api = wandb.Api()
         train_artifact = api.artifact(remove_prefix(data_dict['train']) + ':' + opt.artifact_alias)
         train_dir = train_artifact.download()
-        train_path = Path(train_dir) / 'data/images/'
+        train_path = Path(train_dir) / 'inference/images/'
         data_dict['train'] = str(train_path)
 
     if isinstance(data_dict['val'], str) and data_dict['val'].startswith(WANDB_ARTIFACT_PREFIX):
         api = wandb.Api()
         val_artifact = api.artifact(remove_prefix(data_dict['val']) + ':' + opt.artifact_alias)
         val_dir = val_artifact.download()
-        val_path = Path(val_dir) / 'data/images/'
+        val_path = Path(val_dir) / 'inference/images/'
         data_dict['val'] = str(val_path)
     if train_dir or val_dir:
         ddp_data_path = str(Path(val_dir) / 'wandb_local_data.yaml')
@@ -82,7 +82,7 @@ class WandbLogger():
         # Pre-training routine --
         self.job_type = job_type
         self.wandb, self.wandb_run, self.data_dict = wandb, None if not wandb else wandb.run, data_dict
-        # It's more elegant to stick to 1 wandb.init call, but useful config data is overwritten in the WandbLogger's wandb.init call
+        # It's more elegant to stick to 1 wandb.init call, but useful config inference is overwritten in the WandbLogger's wandb.init call
         if isinstance(opt.resume, str):  # checks resume from artifact
             if opt.resume.startswith(WANDB_ARTIFACT_PREFIX):
                 run_id, project, model_artifact_name = get_run_info(opt.resume)
@@ -142,10 +142,10 @@ class WandbLogger():
                                                                                        opt.artifact_alias)
             self.result_artifact, self.result_table, self.val_table, self.weights = None, None, None, None
             if self.train_artifact_path is not None:
-                train_path = Path(self.train_artifact_path) / 'data/images/'
+                train_path = Path(self.train_artifact_path) / 'inference/images/'
                 data_dict['train'] = str(train_path)
             if self.val_artifact_path is not None:
-                val_path = Path(self.val_artifact_path) / 'data/images/'
+                val_path = Path(self.val_artifact_path) / 'inference/images/'
                 data_dict['val'] = str(val_path)
                 self.val_table = self.val_artifact.get("val")
                 self.map_val_table_path()
@@ -192,7 +192,7 @@ class WandbLogger():
 
     def log_dataset_artifact(self, data_file, single_cls, project, overwrite_config=False):
         with open(data_file) as f:
-            data = yaml.load(f, Loader=yaml.SafeLoader)  # data dict
+            data = yaml.load(f, Loader=yaml.SafeLoader)  # inference dict
         nc, names = (1, ['item']) if single_cls else (int(data['nc']), data['names'])
         names = {k: v for k, v in enumerate(names)}  # to index dictionary
         self.train_artifact = self.create_dataset_table(LoadImagesAndLabels(
@@ -203,7 +203,7 @@ class WandbLogger():
             data['train'] = WANDB_ARTIFACT_PREFIX + str(Path(project) / 'train')
         if data.get('val'):
             data['val'] = WANDB_ARTIFACT_PREFIX + str(Path(project) / 'val')
-        path = data_file if overwrite_config else '_wandb.'.join(data_file.rsplit('.', 1))  # updated data.yaml path
+        path = data_file if overwrite_config else '_wandb.'.join(data_file.rsplit('.', 1))  # updated inference.yaml path
         data.pop('download', None)
         with open(path, 'w') as f:
             yaml.dump(data, f)
@@ -232,14 +232,14 @@ class WandbLogger():
         img_files = tqdm(dataset.img_files) if not img_files else img_files
         for img_file in img_files:
             if Path(img_file).is_dir():
-                artifact.add_dir(img_file, name='data/images')
+                artifact.add_dir(img_file, name='inference/images')
                 labels_path = 'labels'.join(dataset.path.rsplit('images', 1))
-                artifact.add_dir(labels_path, name='data/labels')
+                artifact.add_dir(labels_path, name='inference/labels')
             else:
-                artifact.add_file(img_file, name='data/images/' + Path(img_file).name)
+                artifact.add_file(img_file, name='inference/images/' + Path(img_file).name)
                 label_file = Path(img2label_paths([img_file])[0])
                 artifact.add_file(str(label_file),
-                                  name='data/labels/' + label_file.name) if label_file.exists() else None
+                                  name='inference/labels/' + label_file.name) if label_file.exists() else None
         table = wandb.Table(columns=["id", "train_image", "Classes", "name"])
         class_set = wandb.Classes([{'id': id, 'name': name} for id, name in class_to_id.items()])
         for si, (img, labels, paths, shapes) in enumerate(tqdm(dataset)):

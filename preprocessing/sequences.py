@@ -130,11 +130,11 @@ class Sequences:
 
             if not all_sequences:
                 return pd.DataFrame(columns=SequenceDto.get_cols())
-            if all_sequences and len(all_sequences) == 3 * seq_multiplier:
-                return pd.concat(all_sequences, axis=0)
-            if all_sequences and len(all_sequences) > 3 * seq_multiplier:
-                return pd.concat(all_sequences[:3 * seq_multiplier], axis=0)
-            # if len(all_sequences) > 3:
+            # if all_sequences and len(all_sequences) == 3 * seq_multiplier:
             #     return pd.concat(all_sequences, axis=0)
+            # if all_sequences and len(all_sequences) > 3 * seq_multiplier:
+            #     return pd.concat(all_sequences[:3 * seq_multiplier], axis=0)
+            if len(all_sequences) > 3:
+                return pd.concat(all_sequences, axis=0)
 
         return pd.concat(all_sequences, axis=0)

@@ -75,7 +75,7 @@ def run(source,
                 image = transforms.ToTensor()(image)
                 image = torch.tensor(np.array([image.numpy()]))
 
-                image = image.to(device)  # convert image data to device
+                image = image.to(device)  # convert image inference to device
                 image = image.float()  # convert image to float precision (cpu)
                 start_time = time.time()  # start time for fps calculation
 

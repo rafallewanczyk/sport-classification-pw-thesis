@@ -14,7 +14,8 @@ from preprocessing.sequences import Sequences
 class Video:
     SEQUENCE_LENGTH = 64
 
-    def __init__(self, video_path: Path, allow_processing_pipeline: bool = False):
+    def __init__(self, video_path: Path, allow_processing_pipeline: bool = False,
+                 running_mobilenet_service=None):
         self.video_path = video_path
         self.klass = video_path.parent.stem
         self.allow_processing_pipeline = allow_processing_pipeline
@@ -24,6 +25,8 @@ class Video:
         self.extended_detections_path = self.get_extended_detections_video_path(video_path)
         self.sequences_path = self.get_sequences_video_path(video_path)
         self.x_y_path = self.get_x_y_video_path(video_path)
+        self.x_path = self.get_x_video_path(video_path)
+        self.running_mobilenet_service = running_mobilenet_service
 
     @classmethod
     def get_reshaped_video_path(cls, video_path):
@@ -44,6 +47,10 @@ class Video:
     @classmethod
     def get_x_y_video_path(cls, video_path):
         return cls._add_suffix_to_path(video_path, '_x_y.pkl')
+
+    @classmethod
+    def get_x_video_path(cls, video_path):
+        return cls._add_suffix_to_path(video_path, '_x.pkl')
 
     @staticmethod
     def _add_suffix_to_path(path: Path, suffix: str):
@@ -70,32 +77,67 @@ class Video:
 
         return pd.read_pickle(self.detections_path)
 
-    def build_ext_detections(self)-> pd.DataFrame:
+    def build_ext_detections(self) -> pd.DataFrame:
         return pd.read_pickle(self.extended_detections_path)
 
-    def extend_detections(self, mobilenet_service: MobilenetService) -> pd.DataFrame:
+    def extend_detections(self) -> pd.DataFrame:
         if not self.extended_detections_path.exists() and self.allow_processing_pipeline:
             detections = self.build_detections()
+            if self.running_mobilenet_service:
+                mobilenet_service = self.running_mobilenet_service
+            else:
+                mobilenet_service = MobilenetService()
             detections_sp_ext = mobilenet_service.get_single_person_visual_features(self.get_as_array(), detections)
-            detections_frame_ext = mobilenet_service.get_frame_visual_features(self.get_as_array(),detections_sp_ext )
+            detections_frame_ext = mobilenet_service.get_frame_visual_features(self.get_as_array(), detections_sp_ext)
 
-            pd.to_pickle(detections_frame_ext , self.extended_detections_path)
+            pd.to_pickle(detections_frame_ext, self.extended_detections_path)
         elif not self.extended_detections_path.exists():
             raise FileNotFoundError("No extended detections file available")
 
         return pd.read_pickle(self.extended_detections_path)
 
     def build_sequences(self, use_dump=True, classes_distribution=None) -> pd.DataFrame:
-        detections = self.build_ext_detections()
-        if detections.empty:
-            return pd.DataFrame(columns=SequenceDto.get_cols())
         if not self.sequences_path.exists() or use_dump is False:
+            detections = self.extend_detections()
+            if detections.empty:
+                return pd.DataFrame(columns=SequenceDto.get_cols())
             sequences = Sequences(self.SEQUENCE_LENGTH, detections)
             sequences_df = sequences.generate(classes_distribution)
             sequences_df.to_pickle(self.sequences_path)
         elif not self.sequences_path.exists():
             raise FileNotFoundError("No sequences file available")
         return pd.read_pickle(self.sequences_path)
+
+    def build_x(self, features_types: List[str], max_person_number=6, use_dump=True) -> np.array:
+        sequences = self.build_sequences()
+
+        if self.x_path.exists() and use_dump:
+            with self.x_path.open('rb') as file:
+                return pickle.load(file)
+
+        if sequences.empty:
+            return np.array([]), np.array([])
+
+        sequences = self._expand_sequences_df(sequences)
+
+        x = []
+        for feature in features_types:
+            if feature in [SequenceDto.SKELETON_NORMALIZED, SequenceDto.SKELETON_ANGLES,
+                           SequenceDto.VISUAL_FEATURES_RED, SequenceDto.VISUAL_FEATURES]:
+                x.append(self._single_person_features_to_x(sequences, feature, max_person_number))
+            elif feature in [SequenceDto.FRAME_VIS_FEATURES, SequenceDto.FRAME_VIS_FEATURES_RED]:
+                x.append(self._global_features_to_x(sequences, feature))
+            else:
+                raise Exception(f'{feature} collection is not supported')
+
+        assert any([val[0].shape[0] == x[0][0].shape[0] for val in x])
+
+        x_inputs = list(chain(*x))
+
+        with self.x_path.open('wb') as file:
+            pickle.dump(x_inputs, file)
+
+        return x_inputs
 
     def build_x_y(self, translate_class, features_types: List[str], max_person_number=6, use_dump=True) -> np.array:
         sequences = self.build_sequences()
@@ -184,3 +226,6 @@ class Video:
         sequences[SequenceDto.SKELETON] = sequences[SequenceDto.SKELETON].apply(
             lambda val: val[skeleton_points])
         return sequences
+
+    def get_grouped_detections(self):
+        return self._expand_sequences_df(self.build_sequences())

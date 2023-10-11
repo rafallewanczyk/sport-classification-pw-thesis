@@ -9,13 +9,13 @@ WANDB_ARTIFACT_PREFIX = 'wandb-artifact://'
 
 def create_dataset_artifact(opt):
     with open(opt.data) as f:
-        data = yaml.load(f, Loader=yaml.SafeLoader)  # data dict
+        data = yaml.load(f, Loader=yaml.SafeLoader)  # inference dict
     logger = WandbLogger(opt, '', None, data, job_type='Dataset Creation')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='data/coco.yaml', help='data.yaml path')
+    parser.add_argument('--inference', type=str, default='inference/coco.yaml', help='inference.yaml path')
     parser.add_argument('--single-cls', action='store_true', help='train as single-class dataset')
     parser.add_argument('--project', type=str, default='YOLOR', help='name of W&B Project')
     opt = parser.parse_args()

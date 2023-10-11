@@ -135,7 +135,7 @@ class NearestNeighborDistanceMetric(object):
         self.samples = {}
 
     def partial_fit(self, features, targets, active_targets):
-        """Update the distance metric with new data.
+        """Update the distance metric with new inference.
 
         Parameters
         ----------

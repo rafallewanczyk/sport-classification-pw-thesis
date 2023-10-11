@@ -81,7 +81,7 @@ def create_dataloader(path, imgsz, batch_size, stride, opt, hyp=None, augment=Fa
     nw = min([os.cpu_count() // world_size, batch_size if batch_size > 1 else 0, workers])  # number of workers
     sampler = torch.utils.data.distributed.DistributedSampler(dataset) if rank != -1 else None
     loader = torch.utils.data.DataLoader if image_weights else InfiniteDataLoader
-    # Use torch.utils.data.DataLoader() if dataset.properties will update during training else InfiniteDataLoader()
+    # Use torch.utils.inference.DataLoader() if dataset.properties will update during training else InfiniteDataLoader()
     dataloader = loader(dataset,
                         batch_size=batch_size,
                         num_workers=nw,
@@ -383,7 +383,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             # self.img_files = sorted([x for x in f if x.suffix[1:].lower() in img_formats])  # pathlib
             assert self.img_files, f'{prefix}No images found'
         except Exception as e:
-            raise Exception(f'{prefix}Error loading data from {path}: {e}\nSee {help_url}')
+            raise Exception(f'{prefix}Error loading tennis from {path}: {e}\nSee {help_url}')
 
         # Check cache
         self.label_files = img2label_paths(self.img_files)  # labels

@@ -21,7 +21,7 @@ class MobilenetService:
             dropout_rate=0.2,
             include_preprocessing=True,
         )
-        with open('/preprocessing/red.pkl', 'rb') as file:
+        with open('preprocessing/red.pkl', 'rb') as file:
             self.red = pkl.load(file)
 
     @staticmethod
